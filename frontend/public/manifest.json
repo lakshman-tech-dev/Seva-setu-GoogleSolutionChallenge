@@ -1,0 +1,15 @@
+{
+  "name": "CommunityPulse",
+  "short_name": "CPulse",
+  "description": "Smart NGO volunteer coordination — report needs, match volunteers, track impact.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#1470f5",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💙</text></svg>", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "categories": ["social", "productivity"],
+  "lang": "en"
+}
