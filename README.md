@@ -12,9 +12,9 @@
 │   Web Form  ──┤         │                     │                      │
 │   Voice     ──┘         ▼                     ▼                      │
 │                  ┌─────────────┐     ┌──────────────────┐            │
-│                  │ Claude AI   │     │ Priority Scoring  │            │
+│                  │ Gemini AI   │     │ Priority Scoring  │            │
 │                  │ Triage      │────▶│ Algorithm         │            │
-│                  │ (Haiku)     │     │ (4-component)     │            │
+│                  │ (Flash)     │     │ (4-component)     │            │
 │                  └─────────────┘     └────────┬─────────┘            │
 │                                               │                      │
 │                  ┌────────────────────────────▼─────────┐            │
@@ -45,7 +45,7 @@
 | **Node.js** | ≥ 18 | Backend + frontend runtime |
 | **npm** | ≥ 9 | Package management |
 | **Supabase** | Cloud account | PostgreSQL database + Realtime |
-| **Anthropic** | API key | Claude AI triage (claude-haiku-4-5-20251001) |
+| **Google Gemini** | API key | Gemini AI triage (gemini-2.5-flash) |
 | **Twilio** | Account + sandbox | WhatsApp / SMS webhooks |
 | **OpenCage** | API key (free tier) | Geocoding location text → lat/lng |
 | **Git** | Any | Version control |
@@ -54,7 +54,6 @@ Optional:
 - **Railway** account — backend deployment
 - **Vercel** account — frontend deployment
 - **OneSignal** account — push notifications
-- **Docker** — containerized backend
 
 ---
 
@@ -81,7 +80,7 @@ npm install
 # Backend
 cd backend
 cp .env.example .env
-# Edit .env with your Supabase, Anthropic, Twilio keys
+# Edit .env with your Supabase, Gemini, Twilio keys
 
 # Frontend
 cd ../frontend
@@ -331,7 +330,7 @@ Side-effects on `completed`: volunteer hours +2, SMS feedback sent to beneficiar
 | Maps | Leaflet + react-leaflet + CartoDB dark tiles |
 | Backend | Node.js + Express |
 | Database | Supabase (PostgreSQL + Realtime) |
-| AI Engine | Anthropic Claude Haiku (claude-haiku-4-5-20251001) |
+| AI Engine | Google Gemini (gemini-2.5-flash) |
 | SMS/WhatsApp | Twilio |
 | Push Notifications | OneSignal |
 | Geocoding | OpenCage |
@@ -354,7 +353,7 @@ communitypulse/
 │   │   │   ├── clusters.js  # Hotspot cluster management
 │   │   │   └── trustmap.js  # Community trust map data
 │   │   ├── services/        # Business logic services
-│   │   │   ├── claudeService.js      # AI triage (2-step: translate + triage)
+│   │   │   ├── claudeService.js      # AI triage via Gemini (kept name for imports)
 │   │   │   ├── matchingService.js    # Volunteer matching (composite scoring)
 │   │   │   ├── clusterService.js     # Geographic clustering
 │   │   │   ├── geocodingService.js   # OpenCage geocoding
