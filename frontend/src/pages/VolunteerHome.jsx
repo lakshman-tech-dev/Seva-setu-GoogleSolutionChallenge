@@ -59,9 +59,27 @@ export default function VolunteerHome() {
 
   return (
     <div className="min-h-screen bg-surface-950 pb-20">
-      <div className="max-w-lg mx-auto relative min-h-screen border-x border-white/5 shadow-2xl">
-      {/* Header */}
-      <header className="bg-gradient-to-br from-brand-700 to-brand-900 p-6 rounded-b-3xl">
+      <div className="max-w-7xl mx-auto relative min-h-screen">
+        {/* Desktop Top Nav */}
+        <nav className="hidden md:flex items-center justify-between px-6 py-4 border-b border-white/5 bg-surface-950/50 backdrop-blur-xl sticky top-0 z-50">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+              <Heart className="w-5 h-5 text-white fill-white" />
+            </div>
+            <span className="font-black text-white tracking-tight uppercase text-sm">CommunityPulse</span>
+          </div>
+          <div className="flex items-center gap-8">
+            <Link to="/volunteer" className="text-[10px] font-black uppercase tracking-widest text-brand-400">Dashboard</Link>
+            <Link to="/volunteer/tasks" className="text-[10px] font-black uppercase tracking-widest text-surface-500 hover:text-white transition-colors">Active Duties</Link>
+            <Link to="/report" className="text-[10px] font-black uppercase tracking-widest text-surface-500 hover:text-white transition-colors">Broadcast Need</Link>
+            <Link to="/volunteer/profile" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
+              <User className="w-4 h-4 text-surface-400" />
+            </Link>
+          </div>
+        </nav>
+
+        {/* Header */}
+        <header className="bg-gradient-to-br from-brand-700 to-brand-900 p-6 md:p-10 md:rounded-3xl md:mt-6 mx-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-xl font-bold text-white">Welcome back!</h1>
@@ -104,7 +122,7 @@ export default function VolunteerHome() {
             <p className="text-surface-500 text-xs mt-1 uppercase tracking-widest font-bold">Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedNeeds.map((need) => {
               const IconComp = CATEGORY_ICON[need.category] || ClipboardList;
               return (
@@ -161,8 +179,8 @@ export default function VolunteerHome() {
         )}
       </div>
 
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
+      {/* Bottom nav — only show on mobile/tablet */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
         <div className="flex items-center justify-around py-4">
           <Link to="/volunteer" className="flex flex-col items-center gap-1.5 px-4 text-brand-400">
             <Home className="w-5 h-5" />
