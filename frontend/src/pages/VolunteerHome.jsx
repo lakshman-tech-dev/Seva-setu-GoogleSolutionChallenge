@@ -9,7 +9,7 @@ import {
   Home, ClipboardList, PlusCircle, User, 
   MapPin, AlertTriangle, Package, Stethoscope, 
   GraduationCap, Droplets, Shield, Brain, ChevronRight,
-  MapPinned
+  MapPinned, Heart
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNeeds } from '../hooks/useNeeds';
