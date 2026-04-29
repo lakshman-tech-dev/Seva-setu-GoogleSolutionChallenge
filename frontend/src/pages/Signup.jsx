@@ -101,7 +101,7 @@ const Signup = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-                placeholder="John Doe"
+                placeholder="Full Name"
               />
             </div>
             <div className="space-y-2">
@@ -114,7 +114,7 @@ const Signup = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-                placeholder="+91 98..."
+                placeholder="Phone Number"
               />
             </div>
           </div>
@@ -129,7 +129,7 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-              placeholder="name@example.com"
+              placeholder="Email Address"
             />
           </div>
 
@@ -143,7 +143,7 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-              placeholder="••••••••"
+              placeholder="Password"
             />
           </div>
 
@@ -159,7 +159,7 @@ const Signup = () => {
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value)}
                 className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-                placeholder="e.g. Red Cross India"
+                placeholder="Organization Name"
               />
             </div>
           )}
@@ -175,7 +175,7 @@ const Signup = () => {
                 value={skills}
                 onChange={(e) => setSkills(e.target.value)}
                 className="w-full bg-slate-950/40 border border-slate-700/50 text-white rounded-2xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
-                placeholder="e.g. Medical, Driving, Language"
+                placeholder="Specific Skills"
               />
             </div>
           )}
