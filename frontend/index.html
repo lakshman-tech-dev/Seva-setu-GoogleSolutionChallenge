@@ -15,13 +15,20 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "74cd9573-43d4-4020-a3a6-56467d556918",
-          notifyButton: {
-            enable: true,
-          },
-          allowLocalhostAsSecureOrigin: true,
-        });
+        try {
+          // Only initialize OneSignal if on localhost or if you've configured your production domain in the dashboard
+          const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          
+          await OneSignal.init({
+            appId: "74cd9573-43d4-4020-a3a6-56467d556918",
+            notifyButton: {
+              enable: true,
+            },
+            allowLocalhostAsSecureOrigin: isLocalhost,
+          });
+        } catch (e) {
+          console.warn("OneSignal initialization failed (likely domain mismatch):", e);
+        }
       });
     </script>
   </head>
