@@ -59,6 +59,7 @@ export default function VolunteerHome() {
 
   return (
     <div className="min-h-screen bg-surface-950 pb-20">
+      <div className="max-w-lg mx-auto relative min-h-screen border-x border-white/5 shadow-2xl">
       {/* Header */}
       <header className="bg-gradient-to-br from-brand-700 to-brand-900 p-6 rounded-b-3xl">
         <div className="flex items-center justify-between mb-4">
@@ -161,7 +162,7 @@ export default function VolunteerHome() {
       </div>
 
       {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
         <div className="flex items-center justify-around py-4">
           <Link to="/volunteer" className="flex flex-col items-center gap-1.5 px-4 text-brand-400">
             <Home className="w-5 h-5" />
@@ -181,6 +182,7 @@ export default function VolunteerHome() {
           </Link>
         </div>
       </nav>
+      </div>
     </div>
   );
 }

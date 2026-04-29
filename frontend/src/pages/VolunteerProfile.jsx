@@ -4,8 +4,15 @@
 // availability toggle, burnout warning.
 // ============================================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { 
+  User, Mail, Phone, Star, Activity, 
+  Home, ClipboardList, PlusCircle, 
+  AlertTriangle, Wrench, CheckCircle2,
+  Heart
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const ALL_SKILLS = [
   'food_distribution', 'cooking', 'driving', 'medical', 'first_aid', 'nursing', 'doctor',
@@ -14,12 +21,13 @@ const ALL_SKILLS = [
 ];
 
 export default function VolunteerProfile() {
-  // TODO: In production, load from auth context + API
+  const { user } = useAuth();
+  
   const [volunteer, setVolunteer] = useState({
-    name: 'Priya Sharma',
-    phone: '+919876543210',
-    email: 'priya@example.com',
-    skills: ['medical', 'first_aid', 'counseling'],
+    name: user?.user_metadata?.full_name || 'Volunteer',
+    phone: user?.user_metadata?.phone || '+91 00000 00000',
+    email: user?.email || '',
+    skills: user?.user_metadata?.skills || [],
     is_available: true,
     hours_this_week: 6,
     weekly_hour_limit: 10,
@@ -40,145 +48,180 @@ export default function VolunteerProfile() {
 
   const toggleAvailability = () => {
     setVolunteer((prev) => ({ ...prev, is_available: !prev.is_available }));
-    // TODO: call updateVolunteer API
   };
 
   const pctUsed = Math.min((volunteer.hours_this_week / volunteer.weekly_hour_limit) * 100, 100);
   const hoursRemaining = Math.max(volunteer.weekly_hour_limit - volunteer.hours_this_week, 0);
   const isBurnout = pctUsed >= 80;
   const stars = Math.round(volunteer.reliability_score * 5);
-  const barColor = pctUsed >= 80 ? 'bg-red-500' : pctUsed >= 50 ? 'bg-amber-500' : 'bg-emerald-500';
+  const barColor = pctUsed >= 80 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : pctUsed >= 50 ? 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]' : 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]';
 
   return (
-    <div className="min-h-screen bg-surface-950 pb-24">
-      {/* Header */}
-      <header className="bg-gradient-to-br from-brand-700 to-brand-900 px-4 py-8 rounded-b-3xl text-center">
-        <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold text-white mx-auto mb-3">
-          {volunteer.name.charAt(0)}
-        </div>
-        <h1 className="text-xl font-bold text-white">{volunteer.name}</h1>
-        <p className="text-brand-200 text-sm">{volunteer.phone}</p>
-        <div className="flex items-center justify-center gap-1 mt-2">
-          <span className="text-yellow-400">{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</span>
-          <span className="text-xs text-brand-200">({volunteer.reliability_score.toFixed(2)})</span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#020617] pb-28">
+      <div className="max-w-lg mx-auto relative min-h-screen border-x border-white/5 shadow-2xl">
+        {/* Header */}
+        <header className="bg-gradient-to-br from-brand-700 to-brand-900 px-6 py-12 rounded-b-[3rem] text-center shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full opacity-10">
+            <Activity className="absolute -top-10 -right-10 w-40 h-40" />
+            <Heart className="absolute -bottom-10 -left-10 w-40 h-40" />
+          </div>
+          <div className="w-24 h-24 rounded-[2rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black text-white mx-auto mb-5 shadow-2xl border border-white/20">
+            {volunteer.name.charAt(0)}
+          </div>
+          <h1 className="text-2xl font-black text-white tracking-tight">{volunteer.name}</h1>
+          <p className="text-brand-200 text-sm font-bold uppercase tracking-widest mt-1 flex items-center justify-center gap-2">
+            <Phone className="w-3.5 h-3.5" /> {volunteer.phone}
+          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-4 bg-white/10 w-fit mx-auto px-4 py-1.5 rounded-full backdrop-blur-sm">
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-3.5 h-3.5 ${i < stars ? 'fill-yellow-400 text-yellow-400' : 'text-white/20'}`} />
+              ))}
+            </div>
+            <span className="text-[10px] font-black text-white ml-2 uppercase tracking-widest">Score: {volunteer.reliability_score.toFixed(2)}</span>
+          </div>
+        </header>
 
-      <div className="px-4 mt-4 space-y-4">
-        {/* Availability toggle */}
-        <div className="glass-card p-4 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-surface-100">Availability</p>
-            <p className="text-xs text-surface-400">
-              {volunteer.is_available ? 'You\'re visible to coordinators' : 'You\'re hidden from new assignments'}
-            </p>
-          </div>
-          <button
-            onClick={toggleAvailability}
-            className={`w-14 h-8 rounded-full flex items-center px-1 transition-all duration-300 ${
-              volunteer.is_available ? 'bg-emerald-500' : 'bg-surface-600'
-            }`}
-          >
-            <div className={`w-6 h-6 rounded-full bg-white shadow-lg transition-transform duration-300 ${
-              volunteer.is_available ? 'translate-x-6' : 'translate-x-0'
-            }`} />
-          </button>
-        </div>
-
-        {/* Weekly hours */}
-        <div className="glass-card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-semibold text-surface-100">Weekly Hours</p>
-            <span className="text-xs text-surface-400">{volunteer.hours_this_week}h / {volunteer.weekly_hour_limit}h</span>
-          </div>
-          <div className="w-full h-3 bg-surface-700 rounded-full overflow-hidden mb-2">
-            <div
-              className={`h-full ${barColor} rounded-full transition-all duration-700`}
-              style={{ width: `${pctUsed}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-surface-400">{hoursRemaining}h remaining</span>
-            <span className="text-surface-400">{Math.round(pctUsed)}% used</span>
+        <div className="px-5 mt-8 space-y-5">
+          {/* Availability toggle */}
+          <div className="glass-card p-6 flex items-center justify-between border-white/5">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${volunteer.is_available ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'}`}>
+                <Activity className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white uppercase tracking-wider">Mission Ready</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-widest mt-0.5">
+                  {volunteer.is_available ? 'Visible to Coordinators' : 'Currently Offline'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={toggleAvailability}
+              className={`w-14 h-8 rounded-full flex items-center px-1 transition-all duration-300 ${
+                volunteer.is_available ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-700'
+              }`}
+            >
+              <div className={`w-6 h-6 rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                volunteer.is_available ? 'translate-x-6' : 'translate-x-0'
+              }`} />
+            </button>
           </div>
 
-          {/* Burnout warning */}
-          {isBurnout && (
-            <div className="mt-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
-              <p className="text-sm text-amber-400 font-semibold">⚠️ Take it easy this week</p>
-              <p className="text-xs text-amber-300/70 mt-0.5">
-                You've taken on a lot this week — consider resting. Your wellbeing matters!
+          {/* Weekly hours */}
+          <div className="glass-card p-6 border-white/5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <ClipboardList className="w-5 h-5 text-brand-400" />
+                <p className="text-sm font-bold text-white uppercase tracking-wider">Duty Cycle</p>
+              </div>
+              <span className="text-[10px] font-black text-surface-400 uppercase tracking-widest">{volunteer.hours_this_week}H / {volunteer.weekly_hour_limit}H LIMIT</span>
+            </div>
+            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-4">
+              <div
+                className={`h-full ${barColor} rounded-full transition-all duration-700`}
+                style={{ width: `${pctUsed}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${isBurnout ? 'bg-red-500' : 'bg-brand-500'}`} />
+                <span className="text-[10px] font-bold text-surface-500 uppercase tracking-widest">{hoursRemaining}H Capacity remaining</span>
+              </div>
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">{Math.round(pctUsed)}% Utilization</span>
+            </div>
+
+            {/* Burnout warning */}
+            {isBurnout && (
+              <div className="mt-5 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-4">
+                <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+                <div>
+                  <p className="text-xs text-amber-400 font-black uppercase tracking-widest">Fatigue Warning</p>
+                  <p className="text-[10px] text-amber-300/70 mt-1 font-bold leading-relaxed">
+                    High activity detected. Consider taking rest to maintain optimal response quality.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Impact stats */}
+          <div className="glass-card p-6 border-white/5">
+            <div className="flex items-center gap-3 mb-6">
+              <Star className="w-5 h-5 text-brand-400" />
+              <p className="text-sm font-bold text-white uppercase tracking-wider">Performance Index</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                <p className="text-3xl font-black text-white mb-1">{volunteer.total_tasks_completed}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-widest">Successful Tasks</p>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                <p className="text-3xl font-black text-white mb-1">{volunteer.reliability_score.toFixed(2)}</p>
+                <p className="text-[10px] font-bold text-surface-500 uppercase tracking-widest">Trust Rating</p>
+              </div>
+            </div>
+            <div className="mt-4 bg-brand-500/10 rounded-2xl p-4 text-center border border-brand-500/10 flex items-center justify-center gap-3">
+              <Heart className="w-4 h-4 text-brand-400 fill-brand-400" />
+              <p className="text-[10px] font-black text-brand-400 uppercase tracking-[0.1em]">
+                IMPACT: {volunteer.total_tasks_completed} families supported this month
               </p>
             </div>
-          )}
+          </div>
+
+          {/* Skills (editable) */}
+          <div className="glass-card p-6 border-white/5">
+            <div className="flex items-center gap-3 mb-6">
+              <Wrench className="w-5 h-5 text-brand-400" />
+              <p className="text-sm font-bold text-white uppercase tracking-wider">Field Specializations</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {ALL_SKILLS.map((skill) => {
+                const active = selectedSkills.has(skill);
+                return (
+                  <button
+                    key={skill}
+                    onClick={() => toggleSkill(skill)}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer border ${
+                      active
+                        ? 'bg-brand-600/20 text-brand-400 border-brand-500/30'
+                        : 'bg-white/5 text-surface-500 border-transparent hover:bg-white/10'
+                    }`}
+                  >
+                    {active && <CheckCircle2 className="w-3 h-3 inline mr-1.5 -mt-0.5" />}
+                    {skill.replace('_', ' ')}
+                  </button>
+                );
+              })}
+            </div>
+            <button className="btn-primary w-full mt-6 text-[10px] font-black uppercase tracking-widest py-4 rounded-2xl shadow-xl shadow-brand-500/20">
+              Synchronize Profile
+            </button>
+          </div>
         </div>
 
-        {/* Impact stats */}
-        <div className="glass-card p-4">
-          <p className="text-sm font-semibold text-surface-100 mb-3">📊 Your Impact</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-surface-900/50 rounded-xl p-3 text-center">
-              <p className="text-2xl font-bold text-white">{volunteer.total_tasks_completed}</p>
-              <p className="text-xs text-surface-400">Tasks Completed</p>
-            </div>
-            <div className="bg-surface-900/50 rounded-xl p-3 text-center">
-              <p className="text-2xl font-bold text-white">{volunteer.reliability_score.toFixed(2)}</p>
-              <p className="text-xs text-surface-400">Reliability</p>
-            </div>
+        {/* Bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
+          <div className="flex items-center justify-around py-4">
+            <Link to="/volunteer" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+              <Home className="w-5 h-5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Home</span>
+            </Link>
+            <Link to="/volunteer/tasks" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+              <ClipboardList className="w-5 h-5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">My Tasks</span>
+            </Link>
+            <Link to="/report" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+              <PlusCircle className="w-5 h-5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Report</span>
+            </Link>
+            <Link to="/volunteer/profile" className="flex flex-col items-center gap-1.5 px-4 text-brand-400">
+              <User className="w-5 h-5" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Profile</span>
+            </Link>
           </div>
-          <div className="mt-3 bg-brand-600/10 rounded-xl p-3 text-center">
-            <p className="text-sm text-brand-300">
-              💙 You've helped <span className="font-bold text-brand-200">{volunteer.total_tasks_completed}</span> families this month
-            </p>
-          </div>
-        </div>
-
-        {/* Skills (editable) */}
-        <div className="glass-card p-4">
-          <p className="text-sm font-semibold text-surface-100 mb-3">🛠️ Your Skills</p>
-          <div className="flex flex-wrap gap-2">
-            {ALL_SKILLS.map((skill) => {
-              const active = selectedSkills.has(skill);
-              return (
-                <button
-                  key={skill}
-                  onClick={() => toggleSkill(skill)}
-                  className={`badge transition-all cursor-pointer ${
-                    active
-                      ? 'bg-brand-600/20 text-brand-300 ring-1 ring-brand-500/30'
-                      : 'bg-surface-700/50 text-surface-400 hover:bg-surface-700'
-                  }`}
-                >
-                  {active && '✓ '}{skill.replace('_', ' ')}
-                </button>
-              );
-            })}
-          </div>
-          <button className="btn-primary w-full mt-4 text-sm">Save Skills</button>
-        </div>
+        </nav>
       </div>
-
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-surface-900/95 backdrop-blur-xl border-t border-white/5 z-50">
-        <div className="flex items-center justify-around py-2">
-          <Link to="/volunteer" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">🏠</span>
-            <span className="text-[10px] font-medium">Home</span>
-          </Link>
-          <Link to="/volunteer/tasks" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">📋</span>
-            <span className="text-[10px] font-medium">My Tasks</span>
-          </Link>
-          <Link to="/report" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">➕</span>
-            <span className="text-[10px] font-medium">Report</span>
-          </Link>
-          <Link to="/volunteer/profile" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-brand-400">
-            <span className="text-lg">👤</span>
-            <span className="text-[10px] font-semibold">Profile</span>
-          </Link>
-        </div>
-      </nav>
     </div>
   );
 }
