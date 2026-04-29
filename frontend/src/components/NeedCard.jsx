@@ -4,11 +4,22 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
+import { 
+  Package, Stethoscope, Home, GraduationCap, 
+  Droplets, Shield, Brain, ClipboardList, 
+  Clock, User, ChevronRight, AlertCircle
+} from 'lucide-react';
 import PriorityBadge from './PriorityBadge';
 
-const CATEGORY_EMOJI = {
-  food: '🍚', medical: '🏥', shelter: '🏠', education: '📚',
-  water: '💧', safety: '🛡️', mental_health: '🧠', other: '📋',
+const CATEGORY_ICON = {
+  food: Package,
+  medical: Stethoscope,
+  shelter: Home,
+  education: GraduationCap,
+  water: Droplets,
+  safety: Shield,
+  mental_health: Brain,
+  other: ClipboardList,
 };
 
 const STATUS_STYLES = {
@@ -32,7 +43,7 @@ function timeAgo(dateStr) {
 export default function NeedCard({ need }) {
   const navigate = useNavigate();
 
-  const emoji = CATEGORY_EMOJI[need.category] || '📋';
+  const IconComp = CATEGORY_ICON[need.category] || ClipboardList;
   const statusStyle = STATUS_STYLES[need.status] || STATUS_STYLES.open;
   const description = need.description || need.raw_input || '';
   const truncated = description.length > 100 ? description.slice(0, 100) + '…' : description;
@@ -41,50 +52,54 @@ export default function NeedCard({ need }) {
   return (
     <button
       onClick={() => navigate(`/needs/${need.id}`)}
-      className="glass-card-hover w-full text-left p-4 block"
+      className="glass-card-hover w-full text-left p-4 block border-white/5"
     >
       {/* Header: category + priority + status */}
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xl flex-shrink-0">{emoji}</span>
-          <span className="text-sm font-semibold text-surface-100 capitalize truncate">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+            <IconComp className="w-5 h-5 text-brand-400" />
+          </div>
+          <span className="text-sm font-bold text-surface-100 capitalize truncate">
             {need.category?.replace('_', ' ')}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <PriorityBadge score={need.priority_score} />
-          <span className={`badge ${statusStyle} capitalize`}>
+          <span className={`badge ${statusStyle} capitalize text-[10px] font-black tracking-widest`}>
             {need.status?.replace('_', ' ')}
           </span>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-surface-300 leading-relaxed mb-3">
+      <p className="text-sm text-surface-400 leading-relaxed mb-4 line-clamp-2">
         {truncated}
       </p>
 
       {/* Footer: flags + time */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {flags.map((flag) => (
             <span
               key={flag}
-              className="badge bg-purple-500/15 text-purple-400 ring-1 ring-purple-500/20 text-[10px]"
+              className="text-[10px] font-bold uppercase tracking-widest bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-md border border-purple-500/10"
             >
               {flag}
             </span>
           ))}
         </div>
-        <span className="text-xs text-surface-400 flex-shrink-0">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-surface-500 flex items-center gap-1.5">
+          <Clock className="w-3 h-3" />
           {timeAgo(need.created_at || need.reported_at)}
         </span>
       </div>
 
       {/* Assigned volunteer */}
       {need.assigned_volunteer_name && (
-        <div className="mt-2 pt-2 border-t border-white/5 text-xs text-surface-400">
-          👤 Assigned to <span className="text-brand-400 font-medium">{need.assigned_volunteer_name}</span>
+        <div className="mt-3 pt-3 border-t border-white/5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-surface-500">
+          <User className="w-3 h-3 text-brand-400" />
+          Assigned to <span className="text-brand-400">{need.assigned_volunteer_name}</span>
         </div>
       )}
     </button>

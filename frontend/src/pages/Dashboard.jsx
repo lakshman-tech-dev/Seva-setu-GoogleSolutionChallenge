@@ -7,6 +7,12 @@
 import { useState, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { Link } from 'react-router-dom';
+import { 
+  Heart, Activity, Users, Flame, LayoutDashboard, 
+  UserCircle, PlusCircle, Download, Search, MapPin, 
+  Globe, AlertTriangle, Package, Stethoscope, Home, 
+  GraduationCap, Droplets, Shield, Brain, ClipboardList 
+} from 'lucide-react';
 import NeedCard from '../components/NeedCard';
 import StatCard from '../components/StatCard';
 import ClusterAlert from '../components/ClusterAlert';
@@ -19,12 +25,18 @@ const FILTER_TABS = [
   { key: 'all', label: 'All' },
   { key: 'open', label: 'Open' },
   { key: 'in_progress', label: 'In Progress' },
-  { key: 'critical', label: '🔴 Critical' },
+  { key: 'critical', label: 'Critical' },
 ];
 
-const CATEGORY_EMOJI = {
-  food: '🍚', medical: '🏥', shelter: '🏠', education: '📚',
-  water: '💧', safety: '🛡️', mental_health: '🧠', other: '📋',
+const CATEGORY_ICON = {
+  food: Package,
+  medical: Stethoscope,
+  shelter: Home,
+  education: GraduationCap,
+  water: Droplets,
+  safety: Shield,
+  mental_health: Brain,
+  other: ClipboardList,
 };
 
 function getPinColor(score) {
@@ -113,22 +125,32 @@ export default function Dashboard() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-surface-950/80 backdrop-blur-xl border-b border-white/5">
         {hasSOS && (
-          <div className="bg-red-600 text-white text-center py-2 font-bold uppercase tracking-wider animate-pulse">
-            🚨 SOS EMERGENCY DETECTED: URGENT CRITICAL NEEDS ACTIVE 🚨
+          <div className="bg-red-600 text-white text-center py-2 font-bold uppercase tracking-wider animate-pulse flex items-center justify-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            SOS EMERGENCY DETECTED: URGENT CRITICAL NEEDS ACTIVE
+            <AlertTriangle className="w-5 h-5" />
           </div>
         )}
         <div className="max-w-[1920px] mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">💙</span>
+            <Heart className="w-6 h-6 text-brand-500 fill-brand-500" />
             <h1 className="text-lg font-bold text-white">CommunityPulse</h1>
             <span className="live-dot w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-            <span className="text-xs text-emerald-400 font-medium">LIVE</span>
+            <span className="text-xs text-emerald-400 font-medium uppercase tracking-widest">LIVE</span>
           </div>
           <nav className="flex items-center gap-2">
-            <button onClick={exportToCSV} className="btn-ghost text-sm">⬇️ Export CSV</button>
-            <Link to="/" className="btn-ghost text-sm">Dashboard</Link>
-            <Link to="/volunteers" className="btn-ghost text-sm">Volunteers</Link>
-            <Link to="/report" className="btn-primary text-sm">+ Report Need</Link>
+            <button onClick={exportToCSV} className="btn-ghost text-sm flex items-center gap-2">
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+            <Link to="/" className="btn-ghost text-sm flex items-center gap-2">
+              <LayoutDashboard className="w-4 h-4" /> Dashboard
+            </Link>
+            <Link to="/volunteers" className="btn-ghost text-sm flex items-center gap-2">
+              <Users className="w-4 h-4" /> Volunteers
+            </Link>
+            <Link to="/report" className="btn-primary text-sm flex items-center gap-2">
+              <PlusCircle className="w-4 h-4" /> Report Need
+            </Link>
           </nav>
         </div>
       </header>
@@ -139,23 +161,26 @@ export default function Dashboard() {
         {/* ── LEFT: Priority Feed (30%) ──────────────────────── */}
         <aside className="lg:col-span-4 xl:col-span-3 flex flex-col gap-3 min-h-0">
           {/* Search */}
-          <input
-            type="text"
-            placeholder="Search needs…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input-dark text-sm"
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+            <input
+              type="text"
+              placeholder="Search needs…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-dark text-sm pl-10"
+            />
+          </div>
 
           {/* Filter tabs */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
             {FILTER_TABS.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   activeTab === tab.key
-                    ? 'bg-brand-600 text-white'
+                    ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'
                     : 'bg-white/5 text-surface-300 hover:bg-white/10'
                 }`}
               >
@@ -165,14 +190,14 @@ export default function Dashboard() {
           </div>
 
           {/* Needs list */}
-          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
             {needsLoading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
               </div>
             ) : filteredNeeds.length === 0 ? (
               <div className="text-center py-20 text-surface-400">
-                <p className="text-3xl mb-2">🎉</p>
+                <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
                 <p className="text-sm">No needs matching your filters</p>
               </div>
             ) : (
@@ -183,7 +208,7 @@ export default function Dashboard() {
           </div>
 
           {/* Count */}
-          <div className="text-xs text-surface-400 text-center py-1">
+          <div className="text-[10px] uppercase tracking-widest text-surface-500 text-center py-1 font-bold">
             Showing {filteredNeeds.length} of {needsData?.count || 0} needs
           </div>
         </aside>
@@ -194,75 +219,78 @@ export default function Dashboard() {
           <div className="flex gap-1.5">
             <button
               onClick={() => setMapView('needs')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 mapView === 'needs'
-                  ? 'bg-brand-600 text-white'
+                  ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'
                   : 'bg-white/5 text-surface-300 hover:bg-white/10'
               }`}
             >
-              📍 Needs Map
+              <MapPin className="w-3.5 h-3.5" /> Needs Map
             </button>
             <button
               onClick={() => setMapView('trust')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 mapView === 'trust'
-                  ? 'bg-brand-600 text-white'
+                  ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'
                   : 'bg-white/5 text-surface-300 hover:bg-white/10'
               }`}
             >
-              🗺️ Trust Map
+              <Globe className="w-3.5 h-3.5" /> Trust Map
             </button>
           </div>
 
           {mapView === 'needs' ? (
             <>
-              <div className="glass-card flex-1 overflow-hidden">
+              <div className="glass-card flex-1 overflow-hidden border-white/5">
                 <MapContainer
                   center={mapCenter}
                   zoom={12}
                   scrollWheelZoom={true}
-                  className="w-full h-full rounded-2xl"
+                  className="w-full h-full rounded-2xl grayscale brightness-75 contrast-125"
                   style={{ minHeight: '400px' }}
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                   />
-                  {pins.map((pin) => (
-                    <CircleMarker
-                      key={pin.id}
-                      center={[pin.latitude, pin.longitude]}
-                      radius={pin.priority_score >= 80 ? 10 : pin.priority_score >= 60 ? 8 : 6}
-                      pathOptions={{
-                        fillColor: getPinColor(pin.priority_score),
-                        fillOpacity: 0.8,
-                        color: getPinColor(pin.priority_score),
-                        weight: 2,
-                        opacity: 0.4,
-                      }}
-                    >
-                      <Popup>
-                        <div className="text-sm">
-                          <p className="font-bold capitalize mb-1">
-                            {CATEGORY_EMOJI[pin.category] || '📋'} {pin.category?.replace('_', ' ')}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            Priority: {Math.round(pin.priority_score)} • {pin.status}
-                          </p>
-                          <Link
-                            to={`/needs/${pin.id}`}
-                            className="text-xs text-blue-400 hover:underline mt-1 inline-block"
-                          >
-                            View details →
-                          </Link>
-                        </div>
-                      </Popup>
-                    </CircleMarker>
-                  ))}
+                  {pins.map((pin) => {
+                    const IconComp = CATEGORY_ICON[pin.category] || ClipboardList;
+                    return (
+                      <CircleMarker
+                        key={pin.id}
+                        center={[pin.latitude, pin.longitude]}
+                        radius={pin.priority_score >= 80 ? 10 : pin.priority_score >= 60 ? 8 : 6}
+                        pathOptions={{
+                          fillColor: getPinColor(pin.priority_score),
+                          fillOpacity: 0.8,
+                          color: getPinColor(pin.priority_score),
+                          weight: 2,
+                          opacity: 0.4,
+                        }}
+                      >
+                        <Popup className="custom-popup">
+                          <div className="text-sm p-1">
+                            <p className="font-bold capitalize mb-1 flex items-center gap-2">
+                              <IconComp className="w-3.5 h-3.5" /> {pin.category?.replace('_', ' ')}
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                              Priority: {Math.round(pin.priority_score)} • {pin.status}
+                            </p>
+                            <Link
+                              to={`/needs/${pin.id}`}
+                              className="text-xs text-blue-400 hover:text-blue-300 font-bold mt-2 inline-block flex items-center gap-1"
+                            >
+                              View details <ChevronRight className="w-3 h-3" />
+                            </Link>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    );
+                  })}
                 </MapContainer>
               </div>
-              <div className="text-xs text-surface-400 text-center">
-                {pins.length} active pins on map • Dark tiles by CartoDB
+              <div className="text-[10px] uppercase tracking-widest text-surface-500 text-center font-bold">
+                {pins.length} active units tracked • Engine 2.0
               </div>
             </>
           ) : (
@@ -271,22 +299,22 @@ export default function Dashboard() {
         </main>
 
         {/* ── RIGHT: Stats + Clusters (30%) ──────────────────── */}
-        <aside className="lg:col-span-3 flex flex-col gap-3 min-h-0 overflow-y-auto">
+        <aside className="lg:col-span-3 flex flex-col gap-3 min-h-0 overflow-y-auto custom-scrollbar">
           {/* Stats grid */}
           <div className="grid grid-cols-2 gap-2">
-            <StatCard icon="📥" label="Open Needs" value={stats.total_open} color="red" />
-            <StatCard icon="✅" label="Completed Today" value={stats.total_completed_today} color="green" />
-            <StatCard icon="👥" label="Volunteers Active" value={stats.total_volunteers_active} color="brand" />
-            <StatCard icon="🔥" label="Active Hotspots" value={stats.hotspot_clusters_active} color="orange" />
+            <StatCard icon={<ClipboardList className="w-5 h-5" />} label="Open Needs" value={stats.total_open} color="red" />
+            <StatCard icon={<Activity className="w-5 h-5" />} label="Completed Today" value={stats.total_completed_today} color="green" />
+            <StatCard icon={<Users className="w-5 h-5" />} label="Volunteers Active" value={stats.total_volunteers_active} color="brand" />
+            <StatCard icon={<Flame className="w-5 h-5" />} label="Active Hotspots" value={stats.hotspot_clusters_active} color="orange" />
           </div>
 
           {/* Avg priority */}
-          <div className="glass-card p-4">
-            <p className="text-xs text-surface-400 font-semibold uppercase tracking-wide mb-1">
-              Avg. Open Priority
+          <div className="glass-card p-5 border-white/5">
+            <p className="text-[10px] text-surface-500 font-bold uppercase tracking-widest mb-2">
+              Avg. Severity Index
             </p>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-white">
+            <div className="flex items-center gap-4">
+              <span className="text-4xl font-black text-white">
                 {stats.avg_priority_score_open ?? '—'}
               </span>
               <PriorityBadge score={stats.avg_priority_score_open || 0} showScore={false} />
@@ -295,49 +323,53 @@ export default function Dashboard() {
 
           {/* Top categories */}
           {stats.top_categories?.length > 0 && (
-            <div className="glass-card p-4">
-              <p className="text-xs text-surface-400 font-semibold uppercase tracking-wide mb-3">
-                Top Categories
+            <div className="glass-card p-5 border-white/5">
+              <p className="text-[10px] text-surface-500 font-bold uppercase tracking-widest mb-4">
+                Sector Distribution
               </p>
-              <div className="space-y-2">
-                {stats.top_categories.slice(0, 5).map((cat) => (
-                  <div key={cat.category} className="flex items-center justify-between">
-                    <span className="text-sm text-surface-200 capitalize flex items-center gap-2">
-                      <span>{CATEGORY_EMOJI[cat.category] || '📋'}</span>
-                      {cat.category?.replace('_', ' ')}
-                    </span>
-                    <span className="badge bg-white/10 text-surface-200">{cat.count}</span>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                {stats.top_categories.slice(0, 5).map((cat) => {
+                  const IconComp = CATEGORY_ICON[cat.category] || ClipboardList;
+                  return (
+                    <div key={cat.category} className="flex items-center justify-between group">
+                      <span className="text-sm text-surface-300 capitalize flex items-center gap-3 font-medium">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                          <IconComp className="w-4 h-4 text-brand-400" />
+                        </div>
+                        {cat.category?.replace('_', ' ')}
+                      </span>
+                      <span className="text-xs font-bold text-white px-2 py-1 rounded-md bg-white/5">{cat.count}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Cluster alerts — we reuse stats.hotspot_clusters_active but for real
-              data we'd need a separate /api/clusters endpoint. For now show placeholder. */}
-          <div className="glass-card p-4">
-            <p className="text-xs text-surface-400 font-semibold uppercase tracking-wide mb-3">
-              🔥 Cluster Alerts
+          {/* Cluster alerts */}
+          <div className="glass-card p-5 border-white/5">
+            <p className="text-[10px] text-surface-500 font-bold uppercase tracking-widest mb-4">
+              Anomaly Detection
             </p>
             {stats.hotspot_clusters_active > 0 ? (
               <div className="space-y-2">
                 <ClusterAlert cluster={{ category: 'food', report_count: stats.hotspot_clusters_active * 3 }} />
               </div>
             ) : (
-              <p className="text-sm text-surface-400 italic">No active clusters</p>
+              <p className="text-xs text-surface-500 font-medium italic">Scanning for clusters...</p>
             )}
           </div>
 
           {/* Quick actions */}
-          <div className="glass-card p-4 space-y-2">
-            <p className="text-xs text-surface-400 font-semibold uppercase tracking-wide mb-2">
-              Quick Actions
+          <div className="glass-card p-5 border-white/5 space-y-3">
+            <p className="text-[10px] text-surface-500 font-bold uppercase tracking-widest mb-2">
+              Command Center
             </p>
-            <Link to="/report" className="btn-primary w-full text-center block text-sm">
-              + Submit New Report
+            <Link to="/report" className="btn-primary w-full text-center flex items-center justify-center gap-2 text-xs font-bold py-3">
+              <PlusCircle className="w-4 h-4" /> New Intake Report
             </Link>
-            <Link to="/volunteers" className="btn-ghost w-full text-center block text-sm">
-              Manage Volunteers
+            <Link to="/volunteers" className="btn-ghost w-full text-center flex items-center justify-center gap-2 text-xs font-bold py-3">
+              <Users className="w-4 h-4" /> Fleet Management
             </Link>
           </div>
         </aside>

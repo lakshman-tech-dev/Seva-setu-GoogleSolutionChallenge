@@ -57,6 +57,25 @@ Optional:
 
 ---
 
+## 🚀 Key Features
+
+-   **AI-Powered Triage**: Google Gemini (gemini-2.5-flash) automatically categorizes and scores community needs.
+-   **Multilingual Support**: Real-time translation of reports from regional languages.
+-   **Role-Based Access Control (RBAC)**: Secure authentication via Supabase Auth with distinct views for Coordinators and Volunteers.
+-   **Interactive Impact Map**: Real-time visualization of hotspots and volunteer distribution.
+-   **Trust Mapping**: Automated beneficiary feedback loop to verify successful help delivery.
+-   **Coordinator Dashboard**: Comprehensive management tools for task assignment and volunteer oversight.
+-   **Volunteer PWA**: Mobile-first application for volunteers to manage their assigned tasks.
+
+## 👥 User Roles
+
+| Role | Access Level | Responsibilities |
+| :--- | :--- | :--- |
+| **Coordinator** | Admin | Full dashboard access, volunteer management, task assignment, cluster analysis. |
+| **Volunteer** | Restricted | Task management, updating status of assigned needs, limited map view. |
+
+---
+
 ## Local Development Setup
 
 ### 1. Clone & Install
@@ -330,12 +349,20 @@ Side-effects on `completed`: volunteer hours +2, SMS feedback sent to beneficiar
 | Maps | Leaflet + react-leaflet + CartoDB dark tiles |
 | Backend | Node.js + Express |
 | Database | Supabase (PostgreSQL + Realtime) |
-| AI Engine | Google Gemini (gemini-2.5-flash) |
-| SMS/WhatsApp | Twilio |
-| Push Notifications | OneSignal |
-| Geocoding | OpenCage |
-| Backend Hosting | Railway |
-| Frontend Hosting | Vercel |
+-   **AI-Powered Triage**: Google Gemini (gemini-2.5-flash) automatically categorizes and scores community needs.
+-   **Multilingual Support**: Real-time translation of reports from regional languages.
+-   **Role-Based Access Control (RBAC)**: Secure authentication via Supabase Auth with distinct views for Coordinators and Volunteers.
+-   **Interactive Impact Map**: Real-time visualization of hotspots and volunteer distribution.
+-   **Trust Mapping**: Automated beneficiary feedback loop to verify successful help delivery.
+-   **Coordinator Dashboard**: Comprehensive management tools for task assignment and volunteer oversight.
+-   **Volunteer PWA**: Mobile-first application for volunteers to manage their assigned tasks.
+
+## 👥 User Roles
+
+| Role | Access Level | Responsibilities |
+| :--- | :--- | :--- |
+| **Coordinator** | Admin | Full dashboard access, volunteer management, task assignment, cluster analysis. |
+| **Volunteer** | Restricted | Task management, updating status of assigned needs, limited map view. |
 
 ---
 

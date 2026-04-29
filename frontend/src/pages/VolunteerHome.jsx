@@ -5,17 +5,26 @@
 
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { 
+  Home, ClipboardList, PlusCircle, User, 
+  MapPin, AlertTriangle, Package, Stethoscope, 
+  GraduationCap, Droplets, Shield, Brain, ChevronRight,
+  MapPinned
+} from 'lucide-react';
 import { useNeeds } from '../hooks/useNeeds';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useRealtimeTasks } from '../hooks/useRealtime';
 import PriorityBadge from '../components/PriorityBadge';
 
-// TODO: in production, get volunteer ID from auth context
-const MOCK_VOLUNTEER_ID = null;
-
-const CATEGORY_EMOJI = {
-  food: '🍚', medical: '🏥', shelter: '🏠', education: '📚',
-  water: '💧', safety: '🛡️', mental_health: '🧠', other: '📋',
+const CATEGORY_ICON = {
+  food: Package,
+  medical: Stethoscope,
+  shelter: Home,
+  education: GraduationCap,
+  water: Droplets,
+  safety: Shield,
+  mental_health: Brain,
+  other: ClipboardList,
 };
 
 function haversine(lat1, lon1, lat2, lon2) {
@@ -52,26 +61,33 @@ export default function VolunteerHome() {
       <header className="bg-gradient-to-br from-brand-700 to-brand-900 p-6 rounded-b-3xl">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-bold text-white">👋 Welcome back!</h1>
-            <p className="text-brand-200 text-sm">Volunteer Dashboard</p>
+            <h1 className="text-xl font-bold text-white">Welcome back!</h1>
+            <p className="text-brand-200 text-sm font-medium opacity-80 uppercase tracking-widest">Volunteer Dashboard</p>
           </div>
-          <Link to="/volunteer/profile" className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
-            👤
+          <Link to="/volunteer/profile" className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-all">
+            <User className="w-6 h-6" />
           </Link>
         </div>
         {geoLoading ? (
-          <p className="text-xs text-brand-200">📍 Getting your location…</p>
+          <p className="text-xs text-brand-100 flex items-center gap-2">
+            <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+            Getting your location…
+          </p>
         ) : geoError ? (
-          <p className="text-xs text-amber-300">⚠️ {geoError}</p>
+          <p className="text-xs text-amber-300 flex items-center gap-2 font-bold">
+            <AlertTriangle className="w-3 h-3" /> {geoError}
+          </p>
         ) : coords ? (
-          <p className="text-xs text-emerald-300">📍 Location active: {coords.lat.toFixed(3)}, {coords.lng.toFixed(3)}</p>
+          <p className="text-xs text-emerald-300 flex items-center gap-2 font-bold uppercase tracking-wider">
+            <MapPin className="w-3 h-3" /> Location active: {coords.lat.toFixed(3)}, {coords.lng.toFixed(3)}
+          </p>
         ) : null}
       </header>
 
       {/* Tasks */}
-      <div className="px-4 mt-4">
-        <h2 className="text-sm font-semibold text-surface-400 uppercase tracking-wide mb-3">
-          📋 Nearby Tasks ({sortedNeeds.length})
+      <div className="px-4 mt-6">
+        <h2 className="text-xs font-bold text-surface-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+          <ClipboardList className="w-4 h-4" /> Nearby Tasks ({sortedNeeds.length})
         </h2>
 
         {isLoading ? (
@@ -79,73 +95,87 @@ export default function VolunteerHome() {
             <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : sortedNeeds.length === 0 ? (
-          <div className="text-center py-12 glass-card">
-            <p className="text-3xl mb-2">🎉</p>
-            <p className="text-surface-300 text-sm">No open needs nearby right now.</p>
-            <p className="text-surface-400 text-xs mt-1">Check back soon!</p>
+          <div className="text-center py-12 glass-card border-white/5">
+            <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            <p className="text-surface-300 text-sm font-bold">No open needs nearby right now.</p>
+            <p className="text-surface-500 text-xs mt-1 uppercase tracking-widest font-bold">Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {sortedNeeds.map((need) => (
-              <div key={need.id} className="glass-card-hover p-4">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl mt-0.5">{CATEGORY_EMOJI[need.category] || '📋'}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-sm font-semibold text-surface-100 capitalize truncate">
-                        {need.category?.replace('_', ' ')}
-                      </span>
-                      <PriorityBadge score={need.priority_score} />
+          <div className="space-y-4">
+            {sortedNeeds.map((need) => {
+              const IconComp = CATEGORY_ICON[need.category] || ClipboardList;
+              return (
+                <div key={need.id} className="glass-card-hover p-5 border-white/5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
+                      <IconComp className="w-6 h-6 text-brand-400" />
                     </div>
-                    <p className="text-sm text-surface-300 line-clamp-2 mb-2">
-                      {need.description || need.raw_input?.slice(0, 100)}
-                    </p>
-                    <div className="flex items-center gap-3 text-xs text-surface-400">
-                      {need.distance != null && need.distance < 999 && (
-                        <span>📍 {need.distance < 1 ? `${Math.round(need.distance * 1000)}m` : `${need.distance.toFixed(1)}km`}</span>
-                      )}
-                      {need.location_text && (
-                        <span className="truncate">{need.location_text}</span>
-                      )}
-                    </div>
-                    {/* Skills needed */}
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {(need.vulnerability_flags || []).map((f) => (
-                        <span key={f} className="badge bg-purple-500/15 text-purple-400 text-[10px]">{f}</span>
-                      ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="text-sm font-bold text-surface-100 capitalize truncate">
+                          {need.category?.replace('_', ' ')}
+                        </span>
+                        <PriorityBadge score={need.priority_score} />
+                      </div>
+                      <p className="text-sm text-surface-400 line-clamp-2 mb-3 leading-relaxed">
+                        {need.description || need.raw_input?.slice(0, 100)}
+                      </p>
+                      <div className="flex items-center gap-4 text-[10px] font-bold text-surface-500 uppercase tracking-widest">
+                        {need.distance != null && need.distance < 999 && (
+                          <span className="flex items-center gap-1">
+                            <MapPinned className="w-3 h-3" />
+                            {need.distance < 1 ? `${Math.round(need.distance * 1000)}m` : `${need.distance.toFixed(1)}km`}
+                          </span>
+                        )}
+                        {need.location_text && (
+                          <span className="truncate flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {need.location_text}
+                          </span>
+                        )}
+                      </div>
+                      {/* Skills needed */}
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {(need.vulnerability_flags || []).map((f) => (
+                          <span key={f} className="text-[10px] font-bold uppercase tracking-widest bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-full border border-brand-500/10">
+                            {f}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                  <Link
+                    to={`/needs/${need.id}`}
+                    className="btn-primary w-full mt-5 text-center text-xs font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2"
+                  >
+                    View & Accept Task
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
                 </div>
-                <Link
-                  to={`/needs/${need.id}`}
-                  className="btn-primary w-full mt-3 text-center text-sm block"
-                >
-                  View & Accept Task
-                </Link>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-surface-900/95 backdrop-blur-xl border-t border-white/5 z-50">
-        <div className="flex items-center justify-around py-2">
-          <Link to="/volunteer" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-brand-400">
-            <span className="text-lg">🏠</span>
-            <span className="text-[10px] font-semibold">Home</span>
+      <nav className="fixed bottom-0 left-0 right-0 bg-surface-950/80 backdrop-blur-2xl border-t border-white/5 z-50">
+        <div className="flex items-center justify-around py-4">
+          <Link to="/volunteer" className="flex flex-col items-center gap-1.5 px-4 text-brand-400">
+            <Home className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Home</span>
           </Link>
-          <Link to="/volunteer/tasks" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">📋</span>
-            <span className="text-[10px] font-medium">My Tasks</span>
+          <Link to="/volunteer/tasks" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+            <ClipboardList className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">My Tasks</span>
           </Link>
-          <Link to="/report" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">➕</span>
-            <span className="text-[10px] font-medium">Report</span>
+          <Link to="/report" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+            <PlusCircle className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Report</span>
           </Link>
-          <Link to="/volunteer/profile" className="flex flex-col items-center gap-0.5 px-4 py-1.5 text-surface-400 hover:text-surface-200">
-            <span className="text-lg">👤</span>
-            <span className="text-[10px] font-medium">Profile</span>
+          <Link to="/volunteer/profile" className="flex flex-col items-center gap-1.5 px-4 text-surface-500 hover:text-surface-200 transition-colors">
+            <User className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Profile</span>
           </Link>
         </div>
       </nav>

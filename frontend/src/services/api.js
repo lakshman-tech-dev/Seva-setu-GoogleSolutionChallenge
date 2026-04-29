@@ -13,6 +13,20 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Attach Supabase token to every request
+api.interceptors.request.use(async (config) => {
+  // Use a dynamic import or find a way to get the token without circular dependencies
+  // A common pattern is to read it from localStorage if using Supabase
+  const supabaseKey = Object.keys(localStorage).find(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+  const sessionData = supabaseKey ? JSON.parse(localStorage.getItem(supabaseKey)) : null;
+  const token = sessionData?.access_token;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // ── Needs ───────────────────────────────────────────────────
 
 /** GET /api/needs?status=&category=&limit=&offset= */

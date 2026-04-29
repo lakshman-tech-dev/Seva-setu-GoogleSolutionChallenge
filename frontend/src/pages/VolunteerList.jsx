@@ -4,6 +4,11 @@
 // ============================================================
 
 import { Link } from 'react-router-dom';
+import { 
+  Users, ArrowLeft, Star, Phone, 
+  AlertTriangle, CheckCircle2, User,
+  Activity
+} from 'lucide-react';
 import { useVolunteers } from '../hooks/useVolunteers';
 
 function BurnoutBar({ hoursUsed = 0, limit = 10 }) {
@@ -32,13 +37,21 @@ export default function VolunteerList() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-surface-950/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="btn-ghost text-sm">← Dashboard</Link>
-            <h1 className="text-lg font-bold text-white">👥 Volunteers</h1>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="btn-ghost p-2 hover:bg-white/10 rounded-xl transition-all">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div className="flex items-center gap-3">
+              <Users className="w-6 h-6 text-brand-500" />
+              <h1 className="text-lg font-bold text-white tracking-tight">Fleet Overview</h1>
+            </div>
           </div>
-          <span className="badge bg-brand-600/20 text-brand-400">
-            {volunteers.length} registered
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-surface-500">Live Status:</span>
+            <span className="badge bg-brand-600/10 text-brand-400 border border-brand-500/10 px-3 font-bold">
+              {volunteers.length} Tracking
+            </span>
+          </div>
         </div>
       </header>
 
@@ -49,46 +62,51 @@ export default function VolunteerList() {
           </div>
         ) : volunteers.length === 0 ? (
           <div className="text-center py-20 text-surface-400">
-            <p className="text-4xl mb-3">👥</p>
-            <p>No volunteers registered yet</p>
+            <Users className="w-16 h-16 mx-auto mb-4 opacity-10" />
+            <p className="text-sm font-bold uppercase tracking-widest">No field agents registered</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {volunteers.map((vol) => {
               const reliability = vol.reliability_score ?? 0.75;
               const stars = Math.round(reliability * 5);
               const isAvailable = vol.is_available;
 
               return (
-                <div key={vol.id} className="glass-card-hover p-5">
-                  <div className="flex items-center gap-3 mb-3">
+                <div key={vol.id} className="glass-card-hover p-6 border-white/5">
+                  <div className="flex items-center gap-4 mb-4">
                     {/* Avatar */}
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
-                      isAvailable ? 'bg-brand-600/20 text-brand-400' : 'bg-surface-700 text-surface-400'
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black shadow-inner ${
+                      isAvailable ? 'bg-brand-600/20 text-brand-400' : 'bg-surface-800 text-surface-500'
                     }`}>
                       {vol.name?.charAt(0)?.toUpperCase() || '?'}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-surface-100 truncate">{vol.name}</p>
-                      <p className="text-xs text-surface-400">{vol.phone}</p>
+                      <p className="font-bold text-white truncate text-base">{vol.name}</p>
+                      <div className="flex items-center gap-1.5 text-xs text-surface-500 font-medium mt-0.5">
+                        <Phone className="w-3 h-3" />
+                        {vol.phone}
+                      </div>
                     </div>
-                    <span className={`badge ${isAvailable ? 'bg-emerald-500/15 text-emerald-400' : 'bg-surface-700 text-surface-400'}`}>
-                      {isAvailable ? 'Available' : 'Offline'}
-                    </span>
+                    <div className={`w-2.5 h-2.5 rounded-full ${isAvailable ? 'bg-emerald-500 shadow-lg shadow-emerald-500/40 animate-pulse' : 'bg-surface-600'}`} />
                   </div>
 
                   {/* Reliability stars */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs text-surface-400">Reliability:</span>
-                    <span className="text-yellow-400 text-sm">{'★'.repeat(stars)}{'☆'.repeat(5 - stars)}</span>
-                    <span className="text-xs text-surface-400">({reliability.toFixed(2)})</span>
+                  <div className="flex items-center gap-3 mb-4 bg-white/5 p-2 rounded-xl border border-white/5">
+                    <span className="text-[10px] font-bold text-surface-500 uppercase tracking-widest ml-1">Trust Score:</span>
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-3.5 h-3.5 ${i < stars ? 'fill-yellow-400 text-yellow-400' : 'text-surface-700'}`} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] font-black text-white ml-auto mr-1">{reliability.toFixed(2)}</span>
                   </div>
 
                   {/* Skills */}
                   {vol.skills?.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
+                    <div className="flex flex-wrap gap-1.5 mb-5">
                       {vol.skills.map((s) => (
-                        <span key={s} className="badge bg-brand-600/15 text-brand-300 text-[10px]">
+                        <span key={s} className="text-[10px] font-bold uppercase tracking-widest bg-brand-500/10 text-brand-400 px-2 py-0.5 rounded-md border border-brand-500/10">
                           {s.replace('_', ' ')}
                         </span>
                       ))}
@@ -96,13 +114,21 @@ export default function VolunteerList() {
                   )}
 
                   {/* Weekly hours burnout bar */}
-                  <BurnoutBar hoursUsed={vol.hours_this_week || 0} limit={vol.weekly_hour_limit || 10} />
+                  <div className="mb-4">
+                    <BurnoutBar hoursUsed={vol.hours_this_week || 0} limit={vol.weekly_hour_limit || 10} />
+                  </div>
 
                   {/* Stats footer */}
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5 text-xs text-surface-400">
-                    <span>✅ {vol.total_tasks_completed || 0} completed</span>
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-surface-500 uppercase tracking-widest">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                      {vol.total_tasks_completed || 0} Successful
+                    </div>
                     {vol.hours_this_week >= (vol.weekly_hour_limit || 10) * 0.8 && (
-                      <span className="text-amber-400 font-semibold">⚠️ Burnout risk</span>
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-amber-500 uppercase tracking-widest">
+                        <AlertTriangle className="w-3 h-3" />
+                        Burnout
+                      </div>
                     )}
                   </div>
                 </div>

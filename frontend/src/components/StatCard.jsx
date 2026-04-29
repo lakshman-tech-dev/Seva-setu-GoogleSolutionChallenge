@@ -5,26 +5,29 @@
 
 export default function StatCard({ icon, label, value, sublabel, color = 'brand' }) {
   const colorMap = {
-    brand:  'from-brand-600/20 to-brand-600/5 text-brand-400',
-    red:    'from-red-600/20 to-red-600/5 text-red-400',
-    green:  'from-emerald-600/20 to-emerald-600/5 text-emerald-400',
-    orange: 'from-orange-600/20 to-orange-600/5 text-orange-400',
-    purple: 'from-purple-600/20 to-purple-600/5 text-purple-400',
+    brand:  'border-brand-500/20 text-brand-400',
+    red:    'border-red-500/20 text-red-400',
+    green:  'border-emerald-500/20 text-emerald-400',
+    orange: 'border-orange-500/20 text-orange-400',
+    purple: 'border-purple-500/20 text-purple-400',
   };
 
-  const gradient = colorMap[color] || colorMap.brand;
+  const style = colorMap[color] || colorMap.brand;
 
   return (
-    <div className={`glass-card p-4 bg-gradient-to-br ${gradient}`}>
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">{icon}</span>
-        <div>
-          <p className="text-2xl font-bold text-white">{value ?? '—'}</p>
-          <p className="text-xs text-surface-300 font-medium">{label}</p>
-          {sublabel && (
-            <p className="text-[10px] text-surface-400 mt-0.5">{sublabel}</p>
-          )}
-        </div>
+    <div className={`glass-card p-5 border ${style} flex flex-col gap-4 relative overflow-hidden group`}>
+      <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+        {icon}
+      </div>
+      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+        {icon}
+      </div>
+      <div>
+        <p className="text-2xl font-black text-white tracking-tight">{value ?? '—'}</p>
+        <p className="text-[10px] text-surface-500 font-bold uppercase tracking-widest mt-1">{label}</p>
+        {sublabel && (
+          <p className="text-[10px] text-surface-400 mt-2 font-medium">{sublabel}</p>
+        )}
       </div>
     </div>
   );

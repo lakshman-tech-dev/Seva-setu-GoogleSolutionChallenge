@@ -21,6 +21,9 @@ const trustmapRouter = require('./routes/trustmap');
 // Global error handler
 const { errorHandler } = require('./middleware/errorHandler');
 
+// Auth middleware
+const { authMiddleware, authorize } = require('./middleware/authMiddleware');
+
 const app = express();
 
 // ── Security headers ────────────────────────────────────────
@@ -57,12 +60,18 @@ app.get('/health', (_req, res) => {
 });
 
 // ── API routes ──────────────────────────────────────────────
-app.use('/api/needs', needsRouter);
-app.use('/api/volunteers', volunteersRouter);
+
+// Public webhooks (Twilio needs these to be open)
 app.use('/api/webhooks', webhooksRouter);
-app.use('/api/triage', triageRouter);
-app.use('/api/clusters', clustersRouter);
-app.use('/api/trustmap', trustmapRouter);
+
+// Protected routes (Requires valid Supabase login)
+app.use('/api/needs', authMiddleware, needsRouter);
+
+// Coordinator-only routes
+app.use('/api/volunteers', authMiddleware, authorize('coordinator'), volunteersRouter);
+app.use('/api/triage', authMiddleware, authorize('coordinator'), triageRouter);
+app.use('/api/clusters', authMiddleware, authorize('coordinator'), clustersRouter);
+app.use('/api/trustmap', authMiddleware, authorize('coordinator'), trustmapRouter);
 
 // ── 404 catch-all for unknown routes ────────────────────────
 app.use((_req, res) => {
