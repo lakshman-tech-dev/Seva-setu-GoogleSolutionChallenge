@@ -11,6 +11,7 @@ import {
   GraduationCap, Droplets, Shield, Brain, ChevronRight,
   MapPinned
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { useNeeds } from '../hooks/useNeeds';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useRealtimeTasks } from '../hooks/useRealtime';
@@ -36,9 +37,10 @@ function haversine(lat1, lon1, lat2, lon2) {
 }
 
 export default function VolunteerHome() {
-  const { coords, error: geoError, loading: geoLoading } = useGeolocation(MOCK_VOLUNTEER_ID);
+  const { user } = useAuth();
+  const { coords, error: geoError, loading: geoLoading } = useGeolocation(user?.id);
   const { data: needsData, isLoading } = useNeeds({ status: 'open', limit: 50 });
-  useRealtimeTasks(MOCK_VOLUNTEER_ID);
+  useRealtimeTasks(user?.id);
 
   // Sort needs by distance from volunteer's location
   const sortedNeeds = useMemo(() => {
