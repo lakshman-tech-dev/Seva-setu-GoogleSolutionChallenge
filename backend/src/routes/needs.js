@@ -360,8 +360,27 @@ router.get('/:id', validateId, async (req, res, next) => {
   try {
     const need = await getNeedById(req.params.id);
 
-    // Fetch top 3 volunteer suggestions (non-blocking — if
-    // matching fails we still return the need)
+    // Enrich with assigned volunteer name if applicable
+    let assignedName = null;
+    if (need.status !== 'open') {
+      const { data: taskData } = await supabase
+        .from('tasks')
+        .select('volunteers(name)')
+        .eq('need_id', need.id)
+        .in('status', ['notified', 'accepted', 'completed'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      assignedName = taskData?.volunteers?.name || null;
+    }
+
+    const enrichedNeed = {
+      ...need,
+      assigned_volunteer_name: assignedName
+    };
+
+    // Fetch top 3 volunteer suggestions (non-blocking)
     let volunteerSuggestions = [];
     try {
       const matches = await findBestVolunteers(need, 3);
@@ -379,7 +398,7 @@ router.get('/:id', validateId, async (req, res, next) => {
 
     res.json({
       success: true,
-      data: need,
+      data: enrichedNeed,
       volunteer_suggestions: volunteerSuggestions,
     });
   } catch (err) {
