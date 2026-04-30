@@ -102,14 +102,40 @@ const getAvailableVolunteers = async () => {
 
 /** Fetch a single volunteer by UUID */
 const getVolunteerById = async (id) => {
-  const { data, error } = await supabase
+  // 1. Try legacy volunteers table first
+  const { data: vol, error: volErr } = await supabase
     .from('volunteers')
     .select('*')
     .eq('id', id)
     .single();
 
-  if (error) throw error;
-  return data;
+  if (!volErr && vol) return vol;
+
+  // 2. Fallback to new user_roles table if not found
+  const { data: roleData, error: roleErr } = await supabase
+    .from('user_roles')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (roleErr) {
+    if (roleErr.code === 'PGRST116') return null; // Not found
+    throw roleErr;
+  }
+
+  // Map user_roles fields to volunteer structure
+  return {
+    id: roleData.id,
+    name: roleData.full_name,
+    phone: roleData.phone,
+    email: null, // email not in user_roles
+    skills: roleData.skills || [],
+    is_available: true,
+    weekly_hour_limit: 10,
+    reliability_score: 0.75,
+    total_tasks_completed: 0,
+    is_active: true
+  };
 };
 
 /** Register a new volunteer */

@@ -54,6 +54,18 @@ export const useUpdateNeedStatus = () => {
   });
 };
 
+/** Assign a volunteer to a need (or self-assign) */
+export const useAssignNeed = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ needId, volunteerId }) => assignVolunteer(needId, volunteerId),
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ['need', variables.needId] });
+      qc.invalidateQueries({ queryKey: ['needs'] });
+    },
+  });
+};
+
 /** Dashboard summary stats */
 export const useStats = () => {
   return useQuery({
