@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import { CheckCircle2, AlertCircle, Clock, MapPin as MapPinIcon, Heart, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Clock, MapPin as MapPinIcon, Heart, ShieldCheck, ChevronLeft, User } from 'lucide-react';
 import { useNeed, useUpdateNeedStatus, useAssignNeed } from '../hooks/useNeeds';
 import { useAuth } from '../context/AuthContext';
 import PriorityBadge from '../components/PriorityBadge';
