@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchNeeds, fetchNeedById, submitNeed, updateNeedStatus, fetchStats, fetchMapPins } from '../services/api';
+import { fetchNeeds, fetchNeedById, submitNeed, updateNeedStatus, fetchStats, fetchMapPins, assignVolunteer } from '../services/api';
 import toast from 'react-hot-toast';
 
 /** Fetch paginated list of needs */
