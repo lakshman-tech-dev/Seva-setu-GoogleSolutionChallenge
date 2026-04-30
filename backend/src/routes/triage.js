@@ -86,13 +86,16 @@ router.post(
       } else {
         // Auto-match: find the single best available volunteer
         const matches = await findBestVolunteers(need, 1);
-        if (matches.length === 0) {
-          return res.status(404).json({
-            success: false,
-            error: 'No available volunteers found for this need.',
-          });
+        if (matches.length > 0) {
+          selectedVolunteer = matches[0].volunteer;
         }
-        selectedVolunteer = matches[0].volunteer;
+      }
+
+      if (!selectedVolunteer) {
+        return res.status(404).json({
+          success: false,
+          error: 'No available volunteers found for this mission.',
+        });
       }
 
       // Create the task
